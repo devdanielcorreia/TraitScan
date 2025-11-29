@@ -12,6 +12,11 @@ import ApplyAssessmentPage from './pages/psychologist/ApplyAssessmentPage';
 import ReportsPage from './pages/psychologist/ReportsPage';
 import ReportDetailPage from './pages/psychologist/ReportDetailPage';
 import EmployeesPage from './pages/company/EmployeesPage';
+import AdminDashboardPage from './pages/superadmin/AdminDashboardPage';
+import AdminCompaniesPage from './pages/superadmin/AdminCompaniesPage';
+import AdminPsychologistsPage from './pages/superadmin/AdminPsychologistsPage';
+import AdminInvitationsPage from './pages/superadmin/AdminInvitationsPage';
+import AdminBillingPage from './pages/superadmin/AdminBillingPage';
 
 interface RouteConfig {
   name: string;
@@ -104,6 +109,31 @@ const routes: RouteConfig[] = [
     name: 'Employees',
     path: '/company/employees',
     element: <EmployeesPage />,
+  },
+  {
+    name: 'Admin Dashboard',
+    path: '/admin/dashboard',
+    element: <AdminDashboardPage />,
+  },
+  {
+    name: 'Admin Companies',
+    path: '/admin/companies',
+    element: <AdminCompaniesPage />,
+  },
+  {
+    name: 'Admin Psychologists',
+    path: '/admin/psychologists',
+    element: <AdminPsychologistsPage />,
+  },
+  {
+    name: 'Admin Invitations',
+    path: '/admin/invitations',
+    element: <AdminInvitationsPage />,
+  },
+  {
+    name: 'Admin Billing',
+    path: '/admin/billing',
+    element: <AdminBillingPage />,
   },
 ];
 

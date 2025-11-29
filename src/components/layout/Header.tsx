@@ -45,20 +45,12 @@ export default function Header() {
                 {t('nav.dashboard')}
               </Button>
               {profile.role === 'superadmin' && (
-                <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/admin/psychologists')}
-                  >
-                    {t('nav.psychologists')}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/admin/companies')}
-                  >
-                    {t('nav.companies')}
-                  </Button>
-                </>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/admin/dashboard')}
+                >
+                  {t('nav.admin')}
+                </Button>
               )}
               {profile.role === 'psychologist' && (
                 <>

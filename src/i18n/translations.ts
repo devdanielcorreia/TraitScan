@@ -52,6 +52,7 @@ export const translations = {
       settings: 'Configurações',
       admin: 'Administração',
       subscription: 'Assinatura',
+      billing: 'Faturamento',
     },
     roles: {
       superadmin: 'Superadministrador',
@@ -285,6 +286,7 @@ export const translations = {
       settings: 'Settings',
       admin: 'Administration',
       subscription: 'Subscription',
+      billing: 'Billing',
     },
     roles: {
       superadmin: 'Super Administrator',
@@ -518,6 +520,7 @@ export const translations = {
       settings: 'Configuración',
       admin: 'Administración',
       subscription: 'Suscripción',
+      billing: 'Facturación',
     },
     roles: {
       superadmin: 'Superadministrador',
