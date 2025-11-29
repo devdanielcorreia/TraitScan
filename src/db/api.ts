@@ -686,3 +686,41 @@ export const invitationsApi = {
     return data as Invitation;
   },
 };
+
+export const adminApi = {
+  async getOverview() {
+    const requests = await Promise.all([
+      supabase.from('companies').select('id', { count: 'exact', head: true }),
+      supabase
+        .from('companies')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true),
+      supabase
+        .from('psychologists')
+        .select('id', { count: 'exact', head: true }),
+      supabase
+        .from('psychologists')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_active', true),
+      supabase.from('employees').select('id', { count: 'exact', head: true }),
+      supabase
+        .from('invitations')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending'),
+    ]);
+
+    const extractCount = (result: { count: number | null; error: any }) => {
+      if (result.error) throw result.error;
+      return result.count ?? 0;
+    };
+
+    return {
+      companies: extractCount(requests[0]),
+      activeCompanies: extractCount(requests[1]),
+      psychologists: extractCount(requests[2]),
+      activePsychologists: extractCount(requests[3]),
+      employees: extractCount(requests[4]),
+      pendingInvitations: extractCount(requests[5]),
+    };
+  },
+};

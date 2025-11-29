@@ -54,6 +54,19 @@ export const translations = {
       subscription: 'Assinatura',
       billing: 'Faturamento',
     },
+    admin: {
+      overviewDescription: 'Acompanhe o crescimento de contas e convites ativos.',
+      cards: {
+        totalCompanies: 'Empresas cadastradas',
+        activeCompanies: 'Ativas agora: {value}',
+        totalPsychologists: 'Psicólogos cadastrados',
+        activePsychologists: 'Ativos agora: {value}',
+        employees: 'Funcionários na base',
+        employeesHelper: 'Inclui todos os colaboradores das empresas',
+        pendingInvites: 'Convites pendentes',
+        pendingInvitesHelper: 'Convites aguardando aceite',
+      },
+    },
     roles: {
       superadmin: 'Superadministrador',
       psychologist: 'Psicólogo',
@@ -288,6 +301,19 @@ export const translations = {
       subscription: 'Subscription',
       billing: 'Billing',
     },
+    admin: {
+      overviewDescription: 'Track overall growth of accounts and invitations.',
+      cards: {
+        totalCompanies: 'Registered companies',
+        activeCompanies: 'Active now: {value}',
+        totalPsychologists: 'Registered psychologists',
+        activePsychologists: 'Active now: {value}',
+        employees: 'Employees in database',
+        employeesHelper: 'All employees across companies',
+        pendingInvites: 'Pending invitations',
+        pendingInvitesHelper: 'Invites waiting for acceptance',
+      },
+    },
     roles: {
       superadmin: 'Super Administrator',
       psychologist: 'Psychologist',
@@ -521,6 +547,19 @@ export const translations = {
       admin: 'Administración',
       subscription: 'Suscripción',
       billing: 'Facturación',
+    },
+    admin: {
+      overviewDescription: 'Sigue el crecimiento de cuentas e invitaciones activas.',
+      cards: {
+        totalCompanies: 'Empresas registradas',
+        activeCompanies: 'Activas ahora: {value}',
+        totalPsychologists: 'Psicólogos registrados',
+        activePsychologists: 'Activos ahora: {value}',
+        employees: 'Empleados en la base',
+        employeesHelper: 'Incluye empleados de todas las empresas',
+        pendingInvites: 'Invitaciones pendientes',
+        pendingInvitesHelper: 'Invitaciones esperando aceptación',
+      },
     },
     roles: {
       superadmin: 'Superadministrador',
