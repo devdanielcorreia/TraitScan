@@ -828,4 +828,40 @@ export const adminApi = {
       .eq('id', profileId);
     if (error) throw error;
   },
+
+  async getBillingSummary() {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('id, name, subscription_status, trial_ends_at');
+    if (error) throw error;
+
+    const entries = Array.isArray(data) ? data : [];
+    const baseStatuses = ['trial', 'active', 'past_due', 'cancelled', 'inactive'];
+    const counts: Record<string, number> = {};
+    baseStatuses.forEach((status) => {
+      counts[status] = 0;
+    });
+
+    for (const company of entries) {
+      const status = company.subscription_status ?? 'inactive';
+      counts[status] = (counts[status] ?? 0) + 1;
+    }
+
+    const expiringTrials = entries
+      .filter(
+        (company) =>
+          company.subscription_status === 'trial' && company.trial_ends_at,
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.trial_ends_at!).getTime() -
+          new Date(b.trial_ends_at!).getTime(),
+      )
+      .slice(0, 5);
+
+    return {
+      counts,
+      expiringTrials,
+    };
+  },
 };

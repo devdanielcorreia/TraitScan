@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -10,14 +10,36 @@ import {
 } from '@/components/ui/select';
 import type { UserRole } from '@/types/database';
 
+interface InviteFormLabels {
+  emailLabel: string;
+  roleLabel: string;
+  companyOption: string;
+  psychologistOption: string;
+  submitLabel: string;
+  submittingLabel: string;
+  placeholder: string;
+}
+
 interface InviteFormProps {
   pending?: boolean;
   onSubmit: (payload: { email: string; role: UserRole }) => Promise<void>;
+  labels?: Partial<InviteFormLabels>;
 }
 
-export function InviteForm({ onSubmit, pending }: InviteFormProps) {
+const defaultLabels: InviteFormLabels = {
+  emailLabel: 'E-mail',
+  roleLabel: 'Tipo de convite',
+  companyOption: 'Empresa',
+  psychologistOption: 'Psicólogo',
+  submitLabel: 'Gerar convite',
+  submittingLabel: 'Enviando...',
+  placeholder: 'nome@empresa.com',
+};
+
+export function InviteForm({ onSubmit, pending, labels }: InviteFormProps) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('company');
+  const currentLabels = { ...defaultLabels, ...labels };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -29,30 +51,32 @@ export function InviteForm({ onSubmit, pending }: InviteFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">E-mail</label>
+        <label className="text-sm font-medium">{currentLabels.emailLabel}</label>
         <Input
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="nome@empresa.com"
+          placeholder={currentLabels.placeholder}
           required
           disabled={pending}
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Tipo de convite</label>
+        <label className="text-sm font-medium">{currentLabels.roleLabel}</label>
         <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
           <SelectTrigger>
             <SelectValue defaultValue="company" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="company">Empresa</SelectItem>
-            <SelectItem value="psychologist">Psicólogo</SelectItem>
+            <SelectItem value="company">{currentLabels.companyOption}</SelectItem>
+            <SelectItem value="psychologist">
+              {currentLabels.psychologistOption}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
       <Button type="submit" disabled={pending}>
-        {pending ? 'Enviando...' : 'Gerar convite'}
+        {pending ? currentLabels.submittingLabel : currentLabels.submitLabel}
       </Button>
     </form>
   );

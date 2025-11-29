@@ -58,8 +58,22 @@ export default function AdminInvitationsPage() {
     >
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="rounded-xl border bg-card p-6">
-          <h3 className="text-lg font-semibold mb-4">{t('admin.tables.invitations.createTitle')}</h3>
-          <InviteForm onSubmit={handleSubmit} pending={submitting} />
+          <h3 className="text-lg font-semibold mb-4">
+            {t('admin.tables.invitations.createTitle')}
+          </h3>
+          <InviteForm
+            onSubmit={handleSubmit}
+            pending={submitting}
+            labels={{
+              emailLabel: t('admin.tables.invitations.email'),
+              roleLabel: t('admin.tables.invitations.role'),
+              companyOption: t('roles.company'),
+              psychologistOption: t('roles.psychologist'),
+              submitLabel: t('admin.tables.invitations.submit'),
+              submittingLabel: t('admin.tables.invitations.submitting'),
+              placeholder: 'email@example.com',
+            }}
+          />
         </div>
         <div className="lg:col-span-2 rounded-xl border bg-card overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b">
@@ -106,10 +120,12 @@ export default function AdminInvitationsPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="capitalize">{invite.role}</TableCell>
+                    <TableCell className="capitalize">
+                      {t(`roles.${invite.role}` as const) ?? invite.role}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={invite.status === 'pending' ? 'default' : 'secondary'}>
-                        {invite.status}
+                        {t(`invitations.${invite.status}` as const) ?? invite.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm">

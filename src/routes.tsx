@@ -12,6 +12,7 @@ import ApplyAssessmentPage from './pages/psychologist/ApplyAssessmentPage';
 import ReportsPage from './pages/psychologist/ReportsPage';
 import ReportDetailPage from './pages/psychologist/ReportDetailPage';
 import EmployeesPage from './pages/company/EmployeesPage';
+import CompanySubscriptionPage from './pages/company/SubscriptionPage';
 import AdminDashboardPage from './pages/superadmin/AdminDashboardPage';
 import AdminCompaniesPage from './pages/superadmin/AdminCompaniesPage';
 import AdminPsychologistsPage from './pages/superadmin/AdminPsychologistsPage';
@@ -109,6 +110,11 @@ const routes: RouteConfig[] = [
     name: 'Employees',
     path: '/company/employees',
     element: <EmployeesPage />,
+  },
+  {
+    name: 'Company Subscription',
+    path: '/company/subscription',
+    element: <CompanySubscriptionPage />,
   },
   {
     name: 'Admin Dashboard',
