@@ -723,4 +723,79 @@ export const adminApi = {
       pendingInvitations: extractCount(requests[5]),
     };
   },
+
+  async getCompanies() {
+    const { data, error } = await supabase
+      .from('companies')
+      .select(
+        `
+        id,
+        name,
+        email,
+        subscription_status,
+        trial_ends_at,
+        is_active,
+        created_at,
+        psychologist:psychologists(
+          id,
+          profiles(
+            id,
+            full_name,
+            email
+          )
+        )
+      `,
+      )
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return Array.isArray(data) ? data : [];
+  },
+
+  async setCompanyActive(companyId: string, active: boolean) {
+    const { error } = await supabase
+      .from('companies')
+      .update({ is_active: active })
+      .eq('id', companyId);
+    if (error) throw error;
+  },
+
+  async getPsychologists() {
+    const { data, error } = await supabase
+      .from('psychologists')
+      .select(
+        `
+        id,
+        license_number,
+        specialization,
+        is_active,
+        profiles(
+          id,
+          full_name,
+          email,
+          role
+        )
+      `,
+      )
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return Array.isArray(data) ? data : [];
+  },
+
+  async setPsychologistActive(psychologistId: string, active: boolean) {
+    const { error } = await supabase
+      .from('psychologists')
+      .update({ is_active: active })
+      .eq('id', psychologistId);
+    if (error) throw error;
+  },
+
+  async updatePsychologistRole(profileId: string, role: UserRole) {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ role })
+      .eq('id', profileId);
+    if (error) throw error;
+  },
 };
