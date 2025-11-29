@@ -88,6 +88,17 @@ export const translations = {
           actions: 'Ações',
           empty: 'Nenhum psicólogo encontrado.',
         },
+        invitations: {
+          description: 'Envie convites para psicólogos e empresas.',
+          createTitle: 'Gerar convite',
+          listTitle: 'Convites enviados',
+          listCaption: 'Links expiram em 7 dias automaticamente.',
+          email: 'E-mail',
+          role: 'Função',
+          status: 'Status',
+          expires: 'Expira em',
+          empty: 'Nenhum convite gerado ainda.',
+        },
       },
       actions: {
         activate: 'Reativar',
@@ -104,6 +115,7 @@ export const translations = {
         companyUpdated: 'Status da empresa atualizado',
         psychologistUpdated: 'Status do psicólogo atualizado',
         roleUpdated: 'Perfil atualizado com sucesso',
+        invitationCreated: 'Convite gerado com sucesso',
       },
     },
     roles: {
@@ -374,6 +386,17 @@ export const translations = {
           actions: 'Actions',
           empty: 'No psychologists found.',
         },
+        invitations: {
+          description: 'Send invitations to psychologists and companies.',
+          createTitle: 'Create invitation',
+          listTitle: 'Sent invitations',
+          listCaption: 'Links automatically expire in 7 days.',
+          email: 'Email',
+          role: 'Role',
+          status: 'Status',
+          expires: 'Expires at',
+          empty: 'No invitations yet.',
+        },
       },
       actions: {
         activate: 'Activate',
@@ -390,6 +413,7 @@ export const translations = {
         companyUpdated: 'Company status updated',
         psychologistUpdated: 'Psychologist status updated',
         roleUpdated: 'Role updated successfully',
+        invitationCreated: 'Invitation created successfully',
       },
     },
     roles: {
@@ -660,6 +684,17 @@ export const translations = {
           actions: 'Acciones',
           empty: 'No se encontraron psicólogos.',
         },
+        invitations: {
+          description: 'Envía invitaciones para psicólogos y empresas.',
+          createTitle: 'Generar invitación',
+          listTitle: 'Invitaciones enviadas',
+          listCaption: 'Los enlaces expiran automáticamente en 7 días.',
+          email: 'Correo',
+          role: 'Rol',
+          status: 'Estado',
+          expires: 'Expira el',
+          empty: 'Aún no hay invitaciones.',
+        },
       },
       actions: {
         activate: 'Reactivar',
@@ -676,6 +711,7 @@ export const translations = {
         companyUpdated: 'Estado de la empresa actualizado',
         psychologistUpdated: 'Estado del psicólogo actualizado',
         roleUpdated: 'Rol actualizado con éxito',
+        invitationCreated: 'Invitación generada con éxito',
       },
     },
     roles: {

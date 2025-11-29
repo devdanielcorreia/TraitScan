@@ -687,6 +687,36 @@ export const invitationsApi = {
   },
 };
 
+export const adminInvitationsApi = {
+  async listInvitations() {
+    const { data, error } = await supabase
+      .from('invitations')
+      .select('id, email, role, status, expires_at, invited_by, created_at')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return Array.isArray(data) ? data : [];
+  },
+
+  async createInvitation(payload: {
+    email: string;
+    role: UserRole;
+    company_id?: string | null;
+    psychologist_id?: string | null;
+  }) {
+    const { data, error } = await supabase
+      .from('invitations')
+      .insert({
+        ...payload,
+        status: 'pending',
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .select()
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+};
+
 export const adminApi = {
   async getOverview() {
     const requests = await Promise.all([
