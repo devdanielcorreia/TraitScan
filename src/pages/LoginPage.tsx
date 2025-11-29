@@ -21,7 +21,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const email = `${username}@miaoda.com`;
+      const email = username.includes('@') ? username : `${username}@miaoda.com`;
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
