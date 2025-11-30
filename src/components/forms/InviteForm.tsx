@@ -11,7 +11,9 @@ import {
 import type { UserRole } from '@/types/database';
 
 interface InviteFormLabels {
+  nameLabel: string;
   emailLabel: string;
+  emailHelper: string;
   roleLabel: string;
   companyOption: string;
   psychologistOption: string;
@@ -22,12 +24,14 @@ interface InviteFormLabels {
 
 interface InviteFormProps {
   pending?: boolean;
-  onSubmit: (payload: { email: string; role: UserRole }) => Promise<void>;
+  onSubmit: (payload: { name: string; email?: string; role: UserRole }) => Promise<void>;
   labels?: Partial<InviteFormLabels>;
 }
 
 const defaultLabels: InviteFormLabels = {
-  emailLabel: 'E-mail',
+  nameLabel: 'Nome do convidado',
+  emailLabel: 'E-mail (opcional)',
+  emailHelper: 'Preencha apenas se desejar enviar o convite por e-mail agora.',
   roleLabel: 'Tipo de convite',
   companyOption: 'Empresa',
   psychologistOption: 'Psicólogo',
@@ -37,13 +41,16 @@ const defaultLabels: InviteFormLabels = {
 };
 
 export function InviteForm({ onSubmit, pending, labels }: InviteFormProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('company');
   const currentLabels = { ...defaultLabels, ...labels };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    await onSubmit({ email, role });
+    if (!name.trim()) return;
+    await onSubmit({ name: name.trim(), email: email.trim() || undefined, role });
+    setName('');
     setEmail('');
     setRole('company');
   };
@@ -51,15 +58,26 @@ export function InviteForm({ onSubmit, pending, labels }: InviteFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="space-y-2">
+        <label className="text-sm font-medium">{currentLabels.nameLabel}</label>
+        <Input
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Nome completo"
+          required
+          disabled={pending}
+        />
+      </div>
+      <div className="space-y-2">
         <label className="text-sm font-medium">{currentLabels.emailLabel}</label>
         <Input
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder={currentLabels.placeholder}
-          required
           disabled={pending}
         />
+        <p className="text-xs text-muted-foreground">{currentLabels.emailHelper}</p>
       </div>
       <div className="space-y-2">
         <label className="text-sm font-medium">{currentLabels.roleLabel}</label>

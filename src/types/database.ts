@@ -122,8 +122,9 @@ export interface Response {
 
 export interface Invitation {
   id: string;
-  email: string;
+  email: string | null;
   role: UserRole;
+  invitee_name: string;
   token: string;
   invited_by: string;
   company_id: string | null;

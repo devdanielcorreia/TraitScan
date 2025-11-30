@@ -38,7 +38,7 @@ export default function AdminInvitationsPage() {
     loadInvitations();
   }, []);
 
-  const handleSubmit = async (payload: { email: string; role: Invitation['role'] }) => {
+  const handleSubmit = async (payload: { name: string; email?: string; role: Invitation['role'] }) => {
     try {
       setSubmitting(true);
       await adminInvitationsApi.createInvitation(payload);
@@ -65,7 +65,9 @@ export default function AdminInvitationsPage() {
             onSubmit={handleSubmit}
             pending={submitting}
             labels={{
-              emailLabel: t('admin.tables.invitations.email'),
+              nameLabel: t('admin.tables.invitations.name'),
+              emailLabel: t('admin.tables.invitations.emailOptional'),
+              emailHelper: t('admin.tables.invitations.emailHelper'),
               roleLabel: t('admin.tables.invitations.role'),
               companyOption: t('roles.company'),
               psychologistOption: t('roles.psychologist'),
@@ -90,6 +92,7 @@ export default function AdminInvitationsPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>{t('admin.tables.invitations.name')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.email')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.role')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.status')}</TableHead>
@@ -99,13 +102,13 @@ export default function AdminInvitationsPage() {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     {t('common.loading')}
                   </TableCell>
                 </TableRow>
               ) : invitations.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground">
                     {t('admin.tables.invitations.empty')}
                   </TableCell>
                 </TableRow>
@@ -113,8 +116,11 @@ export default function AdminInvitationsPage() {
                 invitations.map((invite) => (
                   <TableRow key={invite.id}>
                     <TableCell>
+                      <span className="font-medium">{invite.invitee_name}</span>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium">{invite.email}</span>
+                        <span className="font-medium">{invite.email || t('common.noData')}</span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(invite.created_at).toLocaleString()}
                         </span>

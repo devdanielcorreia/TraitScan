@@ -691,14 +691,15 @@ export const adminInvitationsApi = {
   async listInvitations() {
     const { data, error } = await supabase
       .from('invitations')
-      .select('id, email, role, status, expires_at, invited_by, created_at')
+      .select('id, invitee_name, email, role, status, expires_at, invited_by, created_at')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return Array.isArray(data) ? data : [];
   },
 
   async createInvitation(payload: {
-    email: string;
+    name: string;
+    email?: string | null;
     role: UserRole;
     company_id?: string | null;
     psychologist_id?: string | null;
@@ -706,7 +707,11 @@ export const adminInvitationsApi = {
     const { data, error } = await supabase
       .from('invitations')
       .insert({
-        ...payload,
+        invitee_name: payload.name,
+        email: payload.email || null,
+        role: payload.role,
+        company_id: payload.company_id,
+        psychologist_id: payload.psychologist_id,
         status: 'pending',
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       })
