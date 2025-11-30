@@ -701,6 +701,7 @@ export const adminInvitationsApi = {
     name: string;
     email?: string | null;
     role: UserRole;
+    invitedBy: string;
     company_id?: string | null;
     psychologist_id?: string | null;
   }) {
@@ -712,6 +713,7 @@ export const adminInvitationsApi = {
         role: payload.role,
         company_id: payload.company_id,
         psychologist_id: payload.psychologist_id,
+        invited_by: payload.invitedBy,
         status: 'pending',
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       })

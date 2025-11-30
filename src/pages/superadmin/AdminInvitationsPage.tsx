@@ -3,6 +3,7 @@ import { useI18n } from '@/i18n/I18nContext';
 import SuperAdminLayout from './SuperAdminLayout';
 import { adminInvitationsApi } from '@/db/api';
 import type { Invitation } from '@/types/database';
+import { useProfile } from '@/hooks/useProfile';
 import {
   Table,
   TableBody,
@@ -21,6 +22,7 @@ export default function AdminInvitationsPage() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const { profile } = useProfile();
 
   const loadInvitations = async () => {
     try {
@@ -39,9 +41,13 @@ export default function AdminInvitationsPage() {
   }, []);
 
   const handleSubmit = async (payload: { name: string; email?: string; role: Invitation['role'] }) => {
+    if (!profile) return;
     try {
       setSubmitting(true);
-      await adminInvitationsApi.createInvitation(payload);
+      await adminInvitationsApi.createInvitation({
+        ...payload,
+        invitedBy: profile.id,
+      });
       toast.success(t('admin.messages.invitationCreated'));
       await loadInvitations();
     } catch (error: any) {
