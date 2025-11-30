@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/db/supabase';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/i18n/I18nContext';
@@ -31,77 +31,51 @@ export default function Header() {
     }
   };
 
+  const isSuperAdmin = profile?.role === 'superadmin';
+  const showPsychologistNav = profile?.role === 'psychologist';
+  const showCompanyNav = profile?.role === 'company';
+  const showAdminToggle = showPsychologistNav; // futuro flag para psicólogos com acesso ao painel
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card">
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <h1 className="text-2xl font-bold text-primary">TraitScan</h1>
-          {user && profile && (
+          {user && profile && !isSuperAdmin && (
             <nav className="hidden md:flex items-center gap-4">
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  profile.role === 'superadmin'
-                    ? navigate('/admin/dashboard')
-                    : navigate('/dashboard')
-                }
-              >
+              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
                 {t('nav.dashboard')}
               </Button>
-              {profile.role === 'superadmin' && (
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/admin/dashboard')}
-                >
+              {showAdminToggle && (
+                <Button variant="ghost" onClick={() => navigate('/admin/dashboard')}>
                   {t('nav.admin')}
                 </Button>
               )}
-              {profile.role === 'psychologist' && (
+              {showPsychologistNav && (
                 <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/psychologist/quizzes')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/psychologist/quizzes')}>
                     {t('nav.quizzes')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/psychologist/assessments')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/psychologist/assessments')}>
                     {t('nav.assessments')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/psychologist/companies')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/psychologist/companies')}>
                     {t('nav.companies')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/psychologist/reports')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/psychologist/reports')}>
                     {t('nav.reports')}
                   </Button>
                 </>
               )}
-              {profile.role === 'company' && (
+              {showCompanyNav && (
                 <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/company/employees')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/company/employees')}>
                     {t('nav.employees')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/company/reports')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/company/reports')}>
                     {t('nav.reports')}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => navigate('/company/subscription')}
-                  >
+                  <Button variant="ghost" onClick={() => navigate('/company/subscription')}>
                     {t('nav.subscription')}
                   </Button>
                 </>
