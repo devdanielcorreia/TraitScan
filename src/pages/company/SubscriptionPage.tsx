@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { companiesApi } from '@/db/api';
 import { supabase } from '@/db/supabase';
 import type { Company } from '@/types/database';
@@ -28,7 +28,6 @@ const statusStyles: Record<string, string> = {
 export default function CompanySubscriptionPage() {
   const { profile } = useProfile();
   const { t } = useI18n();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,12 +72,6 @@ export default function CompanySubscriptionPage() {
   useEffect(() => {
     loadCompany();
   }, [profile]);
-
-  useEffect(() => {
-    if (profile && profile.role !== 'company') {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [profile, navigate]);
 
   const handleCheckout = async () => {
     setCheckoutLoading(true);
@@ -183,3 +176,4 @@ export default function CompanySubscriptionPage() {
     </div>
   );
 }
+

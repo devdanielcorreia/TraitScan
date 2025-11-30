@@ -1,6 +1,7 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/db/supabase';
+import { profilesApi } from '@/db/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { useI18n } from '@/i18n/I18nContext';
 import { Loader2 } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -15,6 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { refetch } = useProfile();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +32,15 @@ export default function LoginPage() {
 
       if (error) throw error;
 
+      await refetch();
+      const profileInfo = await profilesApi.getCurrentProfile();
       toast.success(t('auth.loginSuccess') || 'Login realizado com sucesso');
-      navigate('/dashboard');
+
+      if (profileInfo?.role === 'superadmin') {
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (error: any) {
       toast.error(error.message || t('auth.loginError'));
     } finally {
@@ -85,3 +95,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

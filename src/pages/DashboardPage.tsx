@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useI18n } from '@/i18n/I18nContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { Users, Building2, FileText, ClipboardList, TrendingUp } from 'lucide-re
 export default function DashboardPage() {
   const { profile } = useProfile();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     psychologists: 0,
     companies: 0,
@@ -19,8 +21,12 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (profile?.role === 'superadmin') {
+      navigate('/admin/dashboard', { replace: true });
+      return;
+    }
     loadStats();
-  }, [profile]);
+  }, [profile, navigate]);
 
   const loadStats = async () => {
     if (!profile) return;

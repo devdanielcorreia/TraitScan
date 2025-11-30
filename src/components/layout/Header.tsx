@@ -40,7 +40,11 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-4">
               <Button
                 variant="ghost"
-                onClick={() => navigate('/dashboard')}
+                onClick={() =>
+                  profile.role === 'superadmin'
+                    ? navigate('/admin/dashboard')
+                    : navigate('/dashboard')
+                }
               >
                 {t('nav.dashboard')}
               </Button>
