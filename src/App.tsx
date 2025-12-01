@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, RequireAuth } from 'miaoda-auth-react';
+import { AuthProvider } from 'miaoda-auth-react';
 import { supabase } from '@/db/supabase';
 import { ThemeProvider } from 'next-themes';
 import { I18nProvider } from '@/i18n/I18nContext';
 import { Toaster } from 'sonner';
 import Header from '@/components/layout/Header';
 import routes from './routes';
+import { AppRouteGuard } from '@/components/auth/AppRouteGuard';
 
 const App = () => {
   return (
@@ -14,7 +15,7 @@ const App = () => {
         <I18nProvider>
           <AuthProvider client={supabase}>
             <Toaster position="top-right" richColors />
-            <RequireAuth whiteList={["/", "/login", "/assessment/*", "/invite/*", "/forgot-password", "/reset-password"]}>
+            <AppRouteGuard whiteList={["/", "/login", "/assessment/*", "/invite/*", "/forgot-password", "/reset-password"]}>
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-grow">
@@ -30,7 +31,7 @@ const App = () => {
                   </Routes>
                 </main>
               </div>
-            </RequireAuth>
+            </AppRouteGuard>
           </AuthProvider>
         </I18nProvider>
       </ThemeProvider>
