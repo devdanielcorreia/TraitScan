@@ -36,7 +36,7 @@ export const translations = {
       register: 'Cadastrar',
       username: 'Usuário',
       password: 'Senha',
-      newPassword: 'Nova senha',
+      newPassword: 'Criar senha',
       confirmPassword: 'Confirmar senha',
       forgotPassword: 'Esqueci minha senha',
       forgotPasswordTitle: 'Esqueceu sua senha?',
