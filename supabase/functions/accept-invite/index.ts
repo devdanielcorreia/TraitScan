@@ -75,6 +75,63 @@ serve(async (req) => {
     return respond(req, "Invitation expired", { status: 410 });
   }
 
+  if (invitation.role === 'psychologist') {
+    const { error: ensurePsychologistError } = await supabase
+      .from('psychologists')
+      .upsert({
+        id: userId,
+        created_by: invitation.invited_by,
+        is_active: true,
+      }, { onConflict: 'id' });
+
+    if (ensurePsychologistError) {
+      console.error(ensurePsychologistError);
+      return respond(req, "Failed to provision psychologist profile", { status: 500 });
+    }
+  }
+
+  if (invitation.role === 'company') {
+    const { data: profileData, error: profileLoadError } = await supabase
+      .from('profiles')
+      .select('full_name, email')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (profileLoadError) {
+      console.error(profileLoadError);
+      return respond(req, "Failed to load profile data", { status: 500 });
+    }
+
+    const companyPayload: Record<string, unknown> = {
+      profile_id: userId,
+      name: invitation.invitee_name ?? profileData?.full_name ?? 'Nova empresa',
+      email: invitation.email ?? profileData?.email ?? null,
+      psychologist_id: invitation.psychologist_id,
+      is_active: true,
+    };
+
+    if (invitation.company_id) {
+      const { error: updateCompanyError } = await supabase
+        .from('companies')
+        .update(companyPayload)
+        .eq('id', invitation.company_id);
+
+      if (updateCompanyError) {
+        console.error(updateCompanyError);
+        return respond(req, "Failed to update company", { status: 500 });
+      }
+    } else {
+      const { error: insertCompanyError } = await supabase
+        .from('companies')
+        .insert(companyPayload);
+
+      if (insertCompanyError) {
+        console.error(insertCompanyError);
+        return respond(req, "Failed to create company", { status: 500 });
+      }
+    }
+  }
+
   const { error: profileError } = await supabase
     .from('profiles')
     .update({ role: invitation.role })

@@ -83,7 +83,7 @@ export const psychologistsApi = {
   async getAll() {
     const { data, error } = await supabase
       .from('psychologists')
-      .select('*, profiles(*)')
+      .select('*, profiles:profiles!psychologists_id_fkey(*)')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return Array.isArray(data) ? data : [];
@@ -92,7 +92,7 @@ export const psychologistsApi = {
   async getById(id: string) {
     const { data, error } = await supabase
       .from('psychologists')
-      .select('*, profiles(*)')
+      .select('*, profiles:profiles!psychologists_id_fkey(*)')
       .eq('id', id)
       .maybeSingle();
     if (error) throw error;
@@ -125,7 +125,7 @@ export const companiesApi = {
   async getAll() {
     const { data, error } = await supabase
       .from('companies')
-      .select('*, psychologists(*, profiles(*))')
+      .select('*, psychologists(*, profiles:profiles!psychologists_id_fkey(*))')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return Array.isArray(data) ? data : [];
@@ -134,7 +134,7 @@ export const companiesApi = {
   async getById(id: string) {
     const { data, error } = await supabase
       .from('companies')
-      .select('*, psychologists(*, profiles(*))')
+      .select('*, psychologists(*, profiles:profiles!psychologists_id_fkey(*))')
       .eq('id', id)
       .maybeSingle();
     if (error) throw error;
@@ -787,7 +787,7 @@ export const adminApi = {
         created_at,
         psychologist:psychologists(
           id,
-          profiles(
+          profiles:profiles!psychologists_id_fkey(
             id,
             full_name,
             email
@@ -818,12 +818,12 @@ export const adminApi = {
         license_number,
         specialization,
         is_active,
-        profiles(
-          id,
-          full_name,
-          email,
-          role
-        )
+          profiles:profiles!psychologists_id_fkey(
+            id,
+            full_name,
+            email,
+            role
+          )
       `,
       )
       .order('created_at', { ascending: false });
