@@ -735,14 +735,18 @@ export const adminInvitationsApi = {
 export const adminApi = {
   async getOverview() {
     const requests = await Promise.all([
-      supabase.from('companies').select('id', { count: 'exact', head: true }),
+      supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('role', 'company'),
       supabase
         .from('companies')
         .select('id', { count: 'exact', head: true })
         .eq('is_active', true),
       supabase
-        .from('psychologists')
-        .select('id', { count: 'exact', head: true }),
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('role', 'psychologist'),
       supabase
         .from('psychologists')
         .select('id', { count: 'exact', head: true })
