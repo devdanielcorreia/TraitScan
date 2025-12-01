@@ -691,7 +691,7 @@ export const adminInvitationsApi = {
   async listInvitations() {
     const { data, error } = await supabase
       .from('invitations')
-      .select('id, invitee_name, email, role, status, expires_at, invited_by, created_at')
+      .select('id, token, invitee_name, email, role, status, expires_at, invited_by, created_at')
       .order('created_at', { ascending: false });
     if (error) throw error;
     return Array.isArray(data) ? data : [];

@@ -14,7 +14,7 @@ const App = () => {
         <I18nProvider>
           <AuthProvider client={supabase}>
             <Toaster position="top-right" richColors />
-            <RequireAuth whiteList={["/", "/login", "/assessment/*"]}>
+            <RequireAuth whiteList={["/", "/login", "/assessment/*", "/invite/*"]}>
               <div className="flex flex-col min-h-screen">
                 <Header />
                 <main className="flex-grow">

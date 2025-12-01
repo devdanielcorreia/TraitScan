@@ -3,6 +3,7 @@ import LandingPage from './pages/public/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import TakeAssessmentPage from './pages/public/TakeAssessmentPage';
+import InvitationSignupPage from './pages/public/InvitationSignupPage';
 import QuizzesPage from './pages/psychologist/QuizzesPage';
 import QuizFormPage from './pages/psychologist/QuizFormPage';
 import CompaniesPage from './pages/psychologist/CompaniesPage';
@@ -43,6 +44,12 @@ const routes: RouteConfig[] = [
     name: 'Take Assessment',
     path: '/assessment/:token',
     element: <TakeAssessmentPage />,
+    visible: false,
+  },
+  {
+    name: 'Invitation Signup',
+    path: '/invite/:token',
+    element: <InvitationSignupPage />,
     visible: false,
   },
   {
