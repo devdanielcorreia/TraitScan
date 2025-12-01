@@ -5,9 +5,11 @@ import { useI18n } from '@/i18n/I18nContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { companiesApi, employeesApi, quizzesApi, assessmentsApi, applicationsApi } from '@/db/api';
 import { Users, Building2, FileText, ClipboardList, TrendingUp } from 'lucide-react';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
+import { CompanyLayout } from '@/components/layout/CompanyLayout';
 
 export default function DashboardPage() {
-  const { profile } = useProfile();
+  const { profile, loading } = useProfile();
   const { t } = useI18n();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -18,7 +20,7 @@ export default function DashboardPage() {
     assessments: 0,
     applications: 0,
   });
-  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     if (profile?.role === 'superadmin') {
@@ -32,10 +34,7 @@ export default function DashboardPage() {
     if (!profile) return;
 
     try {
-      if (profile.role === 'superadmin') {
-        const companies = await companiesApi.getAll();
-        setStats(prev => ({ ...prev, companies: companies.length }));
-      } else if (profile.role === 'psychologist') {
+      if (profile.role === 'psychologist') {
         const [companies, quizzes, assessments, applications] = await Promise.all([
           companiesApi.getByPsychologist(profile.id),
           quizzesApi.getByPsychologist(profile.id),
@@ -57,7 +56,7 @@ export default function DashboardPage() {
             employeesApi.getByCompany(company.id),
             applicationsApi.getByCompany(company.id),
           ]);
-          setStats(prev => ({
+          setStats((prev) => ({
             ...prev,
             employees: employees.length,
             applications: applications.length,
@@ -65,142 +64,132 @@ export default function DashboardPage() {
         }
       }
     } catch (error) {
-      console.error('Erro ao carregar estatísticas:', error);
+      console.error('Erro ao carregar estat�sticas:', error);
     } finally {
-      setLoading(false);
+      setStatsLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading || statsLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <div className="p-6 text-center text-muted-foreground">{t('common.loading')}</div>
     );
   }
 
-  return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">{t('dashboard.welcome')}</h1>
-        <p className="text-muted-foreground mt-2">
-          {profile?.full_name || profile?.email}
-        </p>
-      </div>
+  const cards = (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {profile?.role === 'psychologist' && (
+        <>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('nav.companies')}</CardTitle>
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.companies}</div>
+            </CardContent>
+          </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {profile?.role === 'superadmin' && (
-          <>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('nav.companies')}
-                </CardTitle>
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.companies}</div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('nav.quizzes')}</CardTitle>
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.quizzes}</div>
+            </CardContent>
+          </Card>
 
-        {profile?.role === 'psychologist' && (
-          <>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('nav.companies')}
-                </CardTitle>
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.companies}</div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('nav.assessments')}</CardTitle>
+              <ClipboardList className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.assessments}</div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('nav.quizzes')}
-                </CardTitle>
-                <FileText className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.quizzes}</div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('applications.title')}</CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.applications}</div>
+            </CardContent>
+          </Card>
+        </>
+      )}
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('nav.assessments')}
-                </CardTitle>
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.assessments}</div>
-              </CardContent>
-            </Card>
+      {profile?.role === 'company' && (
+        <>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('nav.employees')}</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.employees}</div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('applications.title')}
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.applications}</div>
-              </CardContent>
-            </Card>
-          </>
-        )}
-
-        {profile?.role === 'company' && (
-          <>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t('nav.employees')}
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.employees}</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Avaliações Aplicadas
-                </CardTitle>
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.applications}</div>
-              </CardContent>
-            </Card>
-          </>
-        )}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('dashboard.overview')}</CardTitle>
-          <CardDescription>
-            Visão geral da plataforma TraitScan
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            {profile?.role === 'superadmin' && 'Gerencie psicólogos, empresas e monitore toda a plataforma.'}
-            {profile?.role === 'psychologist' && 'Crie quizzes, monte avaliações e aplique aos funcionários das empresas.'}
-            {profile?.role === 'company' && 'Cadastre funcionários e visualize os relatórios das avaliações aplicadas.'}
-          </p>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{t('applications.title')}</CardTitle>
+              <ClipboardList className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.applications}</div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
+
+  const overview = (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t('dashboard.overview')}</CardTitle>
+        <CardDescription>{t('admin.overviewDescription')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">
+          {profile?.role === 'psychologist'
+            ? t('admin.tables.psychologists.description')
+            : t('admin.tables.companies.description')}
+        </p>
+      </CardContent>
+    </Card>
+  );
+
+  const body = (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">{t('dashboard.welcome')}</h1>
+        <p className="text-muted-foreground mt-2">{profile?.full_name || profile?.email}</p>
+      </div>
+      {cards}
+      {overview}
+    </div>
+  );
+
+  if (profile?.role === 'psychologist') {
+    return (
+      <PsychologistLayout title={t('nav.dashboard')} description={t('dashboard.overview')}>
+        {body}
+      </PsychologistLayout>
+    );
+  }
+
+  if (profile?.role === 'company') {
+    return (
+      <CompanyLayout title={t('nav.dashboard')} description={t('dashboard.overview')}>
+        {body}
+      </CompanyLayout>
+    );
+  }
+
+  return body;
 }

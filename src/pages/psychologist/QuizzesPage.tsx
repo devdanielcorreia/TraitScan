@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plus, Edit, Copy, Archive } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function QuizzesPage() {
   const { profile } = useProfile();
@@ -53,21 +54,60 @@ export default function QuizzesPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
-    );
-  }
+  const content = loading ? (
+    <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+  ) : quizzes.length === 0 ? (
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center py-12">
+        <p className="text-muted-foreground mb-4">Nenhum quiz criado ainda</p>
+        <Button onClick={() => navigate('/psychologist/quizzes/create')}>
+          <Plus className="mr-2 h-4 w-4" />
+          {t('quizzes.create')}
+        </Button>
+      </CardContent>
+    </Card>
+  ) : (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {quizzes.map((quiz) => (
+        <Card key={quiz.id}>
+          <CardHeader>
+            <CardTitle className="line-clamp-1">{quiz.name}</CardTitle>
+            <CardDescription className="line-clamp-2">
+              {quiz.description || t('common.noData')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/psychologist/quizzes/${quiz.id}/edit`)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleDuplicate(quiz.id)}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleArchive(quiz.id)}>
+                <Archive className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PsychologistLayout
+      title={t('quizzes.title')}
+      description="Gerencie seus quizzes de avaliação psicológica"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{t('quizzes.title')}</h1>
-          <p className="text-muted-foreground mt-2">
-            Gerencie seus quizzes de avaliação psicológica
+          <h1 className="text-2xl font-semibold">{t('quizzes.title')}</h1>
+          <p className="text-sm text-muted-foreground">
+            Organize seus instrumentos e mantenha-os atualizados.
           </p>
         </div>
         <Button onClick={() => navigate('/psychologist/quizzes/create')}>
@@ -75,58 +115,7 @@ export default function QuizzesPage() {
           {t('quizzes.create')}
         </Button>
       </div>
-
-      {quizzes.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">
-              Nenhum quiz criado ainda
-            </p>
-            <Button onClick={() => navigate('/psychologist/quizzes/create')}>
-              <Plus className="mr-2 h-4 w-4" />
-              Criar Primeiro Quiz
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {quizzes.map((quiz) => (
-            <Card key={quiz.id}>
-              <CardHeader>
-                <CardTitle className="line-clamp-1">{quiz.name}</CardTitle>
-                <CardDescription className="line-clamp-2">
-                  {quiz.description || 'Sem descrição'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/psychologist/quizzes/${quiz.id}/edit`)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDuplicate(quiz.id)}
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleArchive(quiz.id)}
-                  >
-                    <Archive className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+      {content}
+    </PsychologistLayout>
   );
 }

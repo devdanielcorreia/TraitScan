@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Plus, Trash2, Save } from 'lucide-react';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 interface Alternative {
   id?: string;
@@ -170,6 +171,10 @@ export default function QuizFormPage() {
   };
 
   return (
+    <PsychologistLayout
+      title={id ? t('quizzes.edit') : t('quizzes.create')}
+      description={t('quizzes.title')}
+    >
     <div className="container mx-auto p-6 space-y-6 max-w-4xl">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">
@@ -257,5 +262,6 @@ export default function QuizFormPage() {
         </Button>
       </div>
     </div>
+  </PsychologistLayout>
   );
 }

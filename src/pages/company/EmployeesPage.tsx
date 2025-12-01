@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { CompanyLayout } from '@/components/layout/CompanyLayout';
 
 export default function EmployeesPage() {
   const { profile } = useProfile();
@@ -109,6 +110,7 @@ export default function EmployeesPage() {
   }
 
   return (
+    <CompanyLayout title={t('nav.employees')} description={t('employees.title')}>
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -240,5 +242,6 @@ export default function EmployeesPage() {
         </Card>
       )}
     </div>
+  </CompanyLayout>
   );
 }

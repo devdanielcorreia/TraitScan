@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Copy, Send } from 'lucide-react';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function ApplyAssessmentPage() {
   const { id } = useParams();
@@ -106,13 +107,14 @@ export default function ApplyAssessmentPage() {
 
   if (!assessment) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <PsychologistLayout title={t('assessments.apply')} description={t('assessments.title')}>
+        <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+      </PsychologistLayout>
     );
   }
 
   return (
+    <PsychologistLayout title={t('assessments.apply')} description={assessment.name}>
     <div className="container mx-auto p-6 space-y-6 max-w-2xl">
       <div>
         <h1 className="text-3xl font-bold">{t('assessments.apply')}</h1>
@@ -212,5 +214,6 @@ export default function ApplyAssessmentPage() {
         </Button>
       </div>
     </div>
+  </PsychologistLayout>
   );
 }

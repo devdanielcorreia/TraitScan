@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/i18n/I18nContext';
 import { toast } from 'sonner';
+import { CompanyLayout } from '@/components/layout/CompanyLayout';
 
 const statusStyles: Record<string, string> = {
   trial: 'bg-blue-100 text-blue-800',
@@ -110,6 +111,10 @@ export default function CompanySubscriptionPage() {
   }
 
   return (
+    <CompanyLayout
+      title={t('nav.subscription')}
+      description={t('companies.subscriptionStatus')}
+    >
     <div className="container max-w-4xl py-8 space-y-6">
       <Card>
         <CardHeader>
@@ -174,6 +179,7 @@ export default function CompanySubscriptionPage() {
           </Card>
         )}
     </div>
+  </CompanyLayout>
   );
 }
 

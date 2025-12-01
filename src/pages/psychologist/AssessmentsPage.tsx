@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Plus, Edit, Archive } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function AssessmentsPage() {
   const { profile } = useProfile();
@@ -44,14 +45,21 @@ export default function AssessmentsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <PsychologistLayout
+        title={t('assessments.title')}
+        description={t('admin.tables.psychologists.description')}
+      >
+        <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+      </PsychologistLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PsychologistLayout
+      title={t('assessments.title')}
+      description={t('admin.tables.psychologists.description')}
+    >
+      <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{t('assessments.title')}</h1>
@@ -117,5 +125,6 @@ export default function AssessmentsPage() {
         </div>
       )}
     </div>
+  </PsychologistLayout>
   );
 }

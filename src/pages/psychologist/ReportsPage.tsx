@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Eye, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function ReportsPage() {
   const { profile } = useProfile();
@@ -58,14 +59,15 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <PsychologistLayout title={t('reports.title')} description={t('reports.title')}>
+        <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+      </PsychologistLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PsychologistLayout title={t('reports.title')} description={t('reports.title')}>
+      <div className="container mx-auto p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold">{t('reports.title')}</h1>
         <p className="text-muted-foreground mt-2">
@@ -132,6 +134,7 @@ export default function ReportsPage() {
           </Table>
         </Card>
       )}
-    </div>
+      </div>
+    </PsychologistLayout>
   );
 }

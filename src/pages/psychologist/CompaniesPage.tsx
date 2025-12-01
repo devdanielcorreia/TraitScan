@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Plus, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function CompaniesPage() {
   const { profile } = useProfile();
@@ -65,14 +66,21 @@ export default function CompaniesPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <PsychologistLayout
+        title={t('companies.title')}
+        description={t('admin.tables.companies.description')}
+      >
+        <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+      </PsychologistLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PsychologistLayout
+      title={t('companies.title')}
+      description={t('admin.tables.companies.description')}
+    >
+      <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">{t('companies.title')}</h1>
@@ -190,6 +198,7 @@ export default function CompaniesPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </PsychologistLayout>
   );
 }

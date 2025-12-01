@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { ArrowLeft } from 'lucide-react';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 interface QuizScore {
   quiz_id: string;
@@ -96,9 +97,9 @@ export default function ReportDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">{t('common.loading')}</div>
-      </div>
+      <PsychologistLayout title={t('reports.title')} description={t('reports.title')}>
+        <div className="text-center text-muted-foreground">{t('common.loading')}</div>
+      </PsychologistLayout>
     );
   }
 
@@ -115,6 +116,7 @@ export default function ReportDetailPage() {
   }
 
   return (
+    <PsychologistLayout title={t('reports.detailedReport')} description={application.companies?.name || ''}>
     <div className="container mx-auto p-6 space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" onClick={() => navigate('/psychologist/reports')}>
@@ -220,5 +222,6 @@ export default function ReportDetailPage() {
         </Button>
       </div>
     </div>
+  </PsychologistLayout>
   );
 }

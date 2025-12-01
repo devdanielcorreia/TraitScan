@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Save, X } from 'lucide-react';
+import { PsychologistLayout } from '@/components/layout/PsychologistLayout';
 
 export default function AssessmentFormPage() {
   const { id } = useParams();
@@ -105,7 +106,11 @@ export default function AssessmentFormPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6 max-w-4xl">
+    <PsychologistLayout
+      title={id ? t('assessments.edit') : t('assessments.create')}
+      description={t('assessments.title')}
+    >
+      <div className="container mx-auto p-6 space-y-6 max-w-4xl">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">
           {id ? t('assessments.edit') : t('assessments.create')}
@@ -221,5 +226,6 @@ export default function AssessmentFormPage() {
         </Button>
       </div>
     </div>
+  </PsychologistLayout>
   );
 }
