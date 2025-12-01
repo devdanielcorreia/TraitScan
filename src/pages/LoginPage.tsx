@@ -90,7 +90,7 @@ export default function LoginPage() {
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('auth.login')}
             </Button>
-            <div className="text-sm text-right">
+            <div className="text-sm text-center">
               <Link to="/forgot-password" className="text-primary hover:underline">
                 {t('auth.forgotPassword')}
               </Link>
