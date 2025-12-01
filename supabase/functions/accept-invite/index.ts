@@ -3,14 +3,44 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.3";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const allowedOrigins = (Deno.env.get("CORS_ALLOWED_ORIGINS") ?? "*")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 if (!supabaseUrl || !serviceRoleKey) {
   throw new Error("Missing Supabase environment variables");
 }
 
+const buildCorsHeaders = (origin: string | null) => {
+  const allowAny = allowedOrigins.includes("*");
+  const allowOrigin =
+    allowAny || (origin && allowedOrigins.includes(origin))
+      ? origin ?? "*"
+      : allowedOrigins[0] ?? "*";
+
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+};
+
+const respond = (req: Request, body: BodyInit | null, init?: ResponseInit) => {
+  const headers = {
+    ...buildCorsHeaders(req.headers.get("origin")),
+    ...init?.headers,
+  };
+  return new Response(body, { ...init, headers });
+};
+
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return respond(req, null, { status: 204 });
+  }
+
   if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
+    return respond(req, "Method not allowed", { status: 405 });
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -19,12 +49,12 @@ serve(async (req) => {
   try {
     payload = await req.json();
   } catch {
-    return new Response("Invalid payload", { status: 400 });
+    return respond(req, "Invalid payload", { status: 400 });
   }
 
   const { token, userId } = payload;
   if (!token || !userId) {
-    return new Response("Missing token or userId", { status: 400 });
+    return respond(req, "Missing token or userId", { status: 400 });
   }
 
   const { data: invitation, error: inviteError } = await supabase
@@ -34,15 +64,15 @@ serve(async (req) => {
     .maybeSingle();
 
   if (inviteError || !invitation) {
-    return new Response("Invitation not found", { status: 404 });
+    return respond(req, "Invitation not found", { status: 404 });
   }
 
   if (invitation.status !== 'pending') {
-    return new Response("Invitation already used", { status: 409 });
+    return respond(req, "Invitation already used", { status: 409 });
   }
 
   if (invitation.expires_at && new Date(invitation.expires_at) < new Date()) {
-    return new Response("Invitation expired", { status: 410 });
+    return respond(req, "Invitation expired", { status: 410 });
   }
 
   const { error: profileError } = await supabase
@@ -52,7 +82,7 @@ serve(async (req) => {
 
   if (profileError) {
     console.error(profileError);
-    return new Response("Failed to update profile", { status: 500 });
+    return respond(req, "Failed to update profile", { status: 500 });
   }
 
   const { error: updateInviteError } = await supabase
@@ -62,10 +92,12 @@ serve(async (req) => {
 
   if (updateInviteError) {
     console.error(updateInviteError);
-    return new Response("Failed to update invitation", { status: 500 });
+    return respond(req, "Failed to update invitation", { status: 500 });
   }
 
-  return new Response(JSON.stringify({ success: true, role: invitation.role }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return respond(
+    req,
+    JSON.stringify({ success: true, role: invitation.role }),
+    { headers: { "Content-Type": "application/json" } },
+  );
 });
