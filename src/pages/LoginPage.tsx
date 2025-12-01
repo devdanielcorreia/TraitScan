@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useI18n } from '@/i18n/I18nContext';
 import { Loader2 } from 'lucide-react';
 import { useProfile } from '@/hooks/useProfile';
+import { Link } from 'react-router-dom';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -89,6 +90,11 @@ export default function LoginPage() {
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('auth.login')}
             </Button>
+            <div className="text-sm text-right">
+              <Link to="/forgot-password" className="text-primary hover:underline">
+                {t('auth.forgotPassword')}
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

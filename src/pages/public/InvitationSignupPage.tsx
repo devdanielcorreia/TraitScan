@@ -1,5 +1,5 @@
-﻿import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/db/supabase';
 import { invitationsApi } from '@/db/api';
 import type { Invitation } from '@/types/database';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 
 export default function InvitationSignupPage() {
   const { token } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useI18n();
   const [invitation, setInvitation] = useState<Invitation | null>(null);
@@ -21,6 +22,10 @@ export default function InvitationSignupPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const appBaseUrl = useMemo(
+    () => import.meta.env.VITE_APP_BASE_URL ?? window.location.origin,
+    [],
+  );
 
   useEffect(() => {
     const loadInvitation = async () => {
@@ -52,33 +57,62 @@ export default function InvitationSignupPage() {
     loadInvitation();
   }, [token]);
 
+  useEffect(() => {
+    if (searchParams.get('confirmed') === '1' && token) {
+      (async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data: acceptData, error: funcError } = await supabase.functions.invoke('accept-invite', {
+          body: { token, userId: user.id },
+        });
+        if (funcError) {
+          toast.error(funcError.message || t('common.error'));
+          return;
+        }
+        toast.success(t('invitations.acceptInvitation'));
+        navigate(getRedirectPath(acceptData?.role), { replace: true });
+      })();
+    }
+  }, [searchParams, token, navigate, t]);
+
+  const getRedirectPath = (role?: Invitation['role']) => {
+    if (role === 'psychologist') return '/psychologist/quizzes';
+    if (role === 'company') return '/company/employees';
+    if (role === 'superadmin') return '/admin/dashboard';
+    return '/dashboard';
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!invitation || !token) return;
     if (!email) {
-      toast.error(t('invitations.emailRequired') || 'Informe um e-mail válido');
+      toast.error(t('invitations.emailRequired') || 'Informe um e-mail v?lido');
       return;
     }
-    if (password.length < 6 || password !== confirmPassword) {
-      toast.error(t('invitations.passwordMismatch') || 'Senhas não conferem');
+    if (!password || password.length < 6 || password !== confirmPassword) {
+      toast.error(t('auth.passwordMismatch'));
       return;
     }
 
     try {
       setSubmitting(true);
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: invitation.invitee_name,
+          },
+          emailRedirectTo: `${appBaseUrl}/invite/${token}?confirmed=1`,
+        },
       });
-      if (signUpError || !data.user) throw signUpError;
+      if (signUpError) throw signUpError;
 
-      const { error: funcError } = await supabase.functions.invoke('accept-invite', {
-        body: { token, userId: data.user.id },
-      });
-      if (funcError) throw funcError;
-
-      toast.success(t('invitations.acceptInvitation'));
-      navigate('/dashboard', { replace: true });
+      toast.success(t('invitations.checkEmail'));
+      setPassword('');
+      setConfirmPassword('');
     } catch (err: any) {
       toast.error(err.message || 'Erro ao concluir cadastro');
     } finally {
@@ -130,27 +164,29 @@ export default function InvitationSignupPage() {
               />
             </div>
             <div>
-              <Label>{t('invitations.password')}</Label>
+              <Label htmlFor="password">{t('auth.newPassword')}</Label>
               <Input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                required
                 minLength={6}
+                required
               />
             </div>
             <div>
-              <Label>{t('invitations.confirmPassword')}</Label>
+              <Label htmlFor="confirm-password">{t('auth.confirmPassword')}</Label>
               <Input
+                id="confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                required
                 minLength={6}
+                required
               />
             </div>
             <Button type="submit" className="w-full" disabled={submitting}>
-              {t('invitations.acceptInvitation')}
+              {t('auth.register')}
             </Button>
           </form>
         </CardContent>

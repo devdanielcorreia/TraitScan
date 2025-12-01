@@ -4,6 +4,8 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import TakeAssessmentPage from './pages/public/TakeAssessmentPage';
 import InvitationSignupPage from './pages/public/InvitationSignupPage';
+import ForgotPasswordPage from './pages/public/ForgotPasswordPage';
+import ResetPasswordPage from './pages/public/ResetPasswordPage';
 import QuizzesPage from './pages/psychologist/QuizzesPage';
 import QuizFormPage from './pages/psychologist/QuizFormPage';
 import CompaniesPage from './pages/psychologist/CompaniesPage';
@@ -38,6 +40,18 @@ const routes: RouteConfig[] = [
     name: 'Login',
     path: '/login',
     element: <LoginPage />,
+    visible: false,
+  },
+  {
+    name: 'Forgot Password',
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+    visible: false,
+  },
+  {
+    name: 'Reset Password',
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
     visible: false,
   },
   {

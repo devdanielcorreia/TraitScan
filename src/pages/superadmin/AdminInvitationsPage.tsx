@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from 'miaoda-auth-react';
 import { useI18n } from '@/i18n/I18nContext';
 import SuperAdminLayout from './SuperAdminLayout';
 import { adminInvitationsApi } from '@/db/api';
@@ -24,6 +25,7 @@ export default function AdminInvitationsPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const { profile } = useProfile();
+  const { user } = useAuth();
   const baseInviteUrl =
     import.meta.env.VITE_APP_BASE_URL ?? window.location.origin;
 
@@ -44,12 +46,16 @@ export default function AdminInvitationsPage() {
   }, []);
 
   const handleSubmit = async (payload: { name: string; email?: string; role: Invitation['role'] }) => {
-    if (!profile) return;
+    const inviterId = profile?.id ?? user?.id;
+    if (!inviterId) {
+      toast.error(t('admin.messages.profileRequired') || 'Perfil n?o carregado');
+      return;
+    }
     try {
       setSubmitting(true);
       await adminInvitationsApi.createInvitation({
         ...payload,
-        invitedBy: profile.id,
+        invitedBy: inviterId,
       });
       toast.success(t('admin.messages.invitationCreated'));
       await loadInvitations();
