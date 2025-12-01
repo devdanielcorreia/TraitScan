@@ -15,6 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { InviteForm } from '@/components/forms/InviteForm';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 export default function AdminInvitationsPage() {
@@ -23,6 +24,8 @@ export default function AdminInvitationsPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const { profile } = useProfile();
+  const baseInviteUrl =
+    import.meta.env.VITE_APP_BASE_URL ?? window.location.origin;
 
   const loadInvitations = async () => {
     try {
@@ -56,6 +59,18 @@ export default function AdminInvitationsPage() {
       setSubmitting(false);
     }
   };
+
+  const handleCopyLink = async (link: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success(t('admin.tables.invitations.copySuccess'));
+    } catch {
+      toast.error(t('common.error'));
+    }
+  };
+
+  const getInviteLink = (token: string) =>
+    `${baseInviteUrl}/invite/${token}`;
 
   return (
     <SuperAdminLayout
@@ -102,19 +117,20 @@ export default function AdminInvitationsPage() {
                 <TableHead>{t('admin.tables.invitations.email')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.role')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.status')}</TableHead>
+                <TableHead>{t('admin.tables.invitations.link')}</TableHead>
                 <TableHead>{t('admin.tables.invitations.expires')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
                     {t('common.loading')}
                   </TableCell>
                 </TableRow>
               ) : invitations.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
                     {t('admin.tables.invitations.empty')}
                   </TableCell>
                 </TableRow>
@@ -139,6 +155,22 @@ export default function AdminInvitationsPage() {
                       <Badge variant={invite.status === 'pending' ? 'default' : 'secondary'}>
                         {t(`invitations.${invite.status}` as const) ?? invite.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={getInviteLink(invite.token)}
+                          readOnly
+                          className="text-xs"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopyLink(getInviteLink(invite.token))}
+                        >
+                          {t('admin.tables.invitations.copyLink')}
+                        </Button>
+                      </div>
                     </TableCell>
                     <TableCell className="text-sm">
                       {invite.expires_at
