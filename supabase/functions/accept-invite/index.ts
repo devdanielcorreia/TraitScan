@@ -102,11 +102,12 @@ serve(async (req) => {
       return respond(req, "Failed to load profile data", { status: 500 });
     }
 
+    const fallbackPsychologist = invitation.psychologist_id ?? invitation.invited_by;
     const companyPayload: Record<string, unknown> = {
       profile_id: userId,
       name: invitation.invitee_name ?? profileData?.full_name ?? 'Nova empresa',
       email: invitation.email ?? profileData?.email ?? null,
-      psychologist_id: invitation.psychologist_id,
+      psychologist_id: fallbackPsychologist,
       is_active: true,
     };
 

@@ -54,6 +54,7 @@ export default function CompaniesPage() {
         email: inviteEmail.trim() || undefined,
         role: 'company',
         invitedBy: profile.id,
+        psychologist_id: profile.id,
       });
       if (data?.token) {
         const link = `${baseInviteUrl}/invite/${data.token}`;
