@@ -52,6 +52,7 @@ export const translations = {
       loginSubtitle: 'Entre com suas credenciais',
       loginError: 'Erro ao fazer login',
       loginSuccess: 'Login realizado com sucesso',
+      accountSuspended: 'Conta suspensa. Entre em contato com o administrador.',
       logoutSuccess: 'Logout realizado com sucesso',
     },
     nav: {
@@ -406,6 +407,7 @@ export const translations = {
         loginSubtitle: 'Sign in with your credentials',
         loginError: 'Login error',
         loginSuccess: 'Logged in successfully',
+        accountSuspended: 'Account suspended. Please contact an administrator.',
         logoutSuccess: 'Logged out successfully',
       },
     nav: {
@@ -760,6 +762,7 @@ export const translations = {
         loginSubtitle: 'Inicie sesión con sus credenciales',
         loginError: 'Error al iniciar sesión',
         loginSuccess: 'Inicio de sesión exitoso',
+        accountSuspended: 'Cuenta suspendida. Contacta al administrador.',
         logoutSuccess: 'Sesión cerrada exitosamente',
       },
     nav: {

@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/db/supabase';
-import { profilesApi } from '@/db/api';
+import { profilesApi, psychologistsApi, companiesApi } from '@/db/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,9 +35,32 @@ export default function LoginPage() {
 
       await refetch();
       const profileInfo = await profilesApi.getCurrentProfile();
+      if (!profileInfo) {
+        toast.error(t('auth.loginError'));
+        return;
+      }
+
+      if (profileInfo.role === 'psychologist') {
+        const entry = await psychologistsApi.getById(profileInfo.id);
+        if (entry && entry.is_active === false) {
+          await supabase.auth.signOut();
+          toast.error(t('auth.accountSuspended') || 'Conta suspensa. Entre em contato com o administrador.');
+          return;
+        }
+      }
+
+      if (profileInfo.role === 'company') {
+        const company = await companiesApi.getByProfileId(profileInfo.id);
+        if (company && company.is_active === false) {
+          await supabase.auth.signOut();
+          toast.error(t('auth.accountSuspended') || 'Conta suspensa. Entre em contato com o administrador.');
+          return;
+        }
+      }
+
       toast.success(t('auth.loginSuccess') || 'Login realizado com sucesso');
 
-      if (profileInfo?.role === 'superadmin') {
+      if (profileInfo.role === 'superadmin') {
         navigate('/admin/dashboard', { replace: true });
       } else {
         navigate('/dashboard', { replace: true });
