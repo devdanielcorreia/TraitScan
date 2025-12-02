@@ -98,6 +98,10 @@ export default function QuizFormPage() {
           toast.error(`Alternativa vazia na pergunta ${question.order_number}`);
           return;
         }
+        if (alt.weight < 1 || alt.weight > 4) {
+          toast.error(`Peso inválido na pergunta ${question.order_number}. Use valores entre 1 e 4.`);
+          return;
+        }
       }
     }
 
@@ -170,6 +174,14 @@ export default function QuizFormPage() {
     setQuestions(updated);
   };
 
+  const updateAlternativeWeight = (qIndex: number, aIndex: number, value: string) => {
+    const parsed = Number(value);
+    const sanitized = Number.isFinite(parsed) ? Math.min(4, Math.max(1, parsed)) : 1;
+    const updated = [...questions];
+    updated[qIndex].alternatives[aIndex].weight = sanitized;
+    setQuestions(updated);
+  };
+
   return (
     <PsychologistLayout
       title={id ? t('quizzes.edit') : t('quizzes.create')}
@@ -235,10 +247,18 @@ export default function QuizFormPage() {
               <div className="space-y-3">
                 <Label>{t('quizzes.alternatives')}</Label>
                 {question.alternatives.map((alt, aIndex) => (
-                  <div key={aIndex} className="flex gap-2 items-center">
-                    <span className="text-sm font-medium w-20">
-                      Peso {alt.weight}:
-                    </span>
+                  <div key={aIndex} className="flex flex-col gap-2 md:flex-row md:items-center">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs">Peso</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={4}
+                        value={alt.weight}
+                        onChange={(e) => updateAlternativeWeight(qIndex, aIndex, e.target.value)}
+                        className="w-24"
+                      />
+                    </div>
                     <Input
                       value={alt.alternative_text}
                       onChange={(e) => updateAlternative(qIndex, aIndex, e.target.value)}
