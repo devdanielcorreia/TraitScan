@@ -645,8 +645,8 @@ export const applicationsApi = {
     const { error } = await supabase.rpc('set_application_status', {
       app_token: token,
       new_status: status,
-      started_at: timestamps?.started_at ?? null,
-      completed_at: timestamps?.completed_at ?? null,
+      new_started_at: timestamps?.started_at ?? null,
+      new_completed_at: timestamps?.completed_at ?? null,
     });
     if (error) throw error;
   },
