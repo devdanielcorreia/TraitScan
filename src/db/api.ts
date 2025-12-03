@@ -561,6 +561,13 @@ export const assessmentsApi = {
       .eq('quiz_id', quizId);
     if (error) throw error;
   },
+
+  async getPublicContentByToken(token: string) {
+    const { data, error } = await supabase
+      .rpc('get_assessment_content', { app_token: token });
+    if (error) throw error;
+    return data;
+  },
 };
 
 export const applicationsApi = {
@@ -629,6 +636,19 @@ export const applicationsApi = {
       .maybeSingle();
     if (error) throw error;
     return data as AssessmentApplication;
+  },
+
+  async updateStatusByToken(token: string, status: AssessmentStatus, timestamps?: {
+    started_at?: string;
+    completed_at?: string;
+  }) {
+    const { error } = await supabase.rpc('set_application_status', {
+      app_token: token,
+      new_status: status,
+      started_at: timestamps?.started_at ?? null,
+      completed_at: timestamps?.completed_at ?? null,
+    });
+    if (error) throw error;
   },
 };
 

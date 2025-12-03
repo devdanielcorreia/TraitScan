@@ -42,40 +42,48 @@ export default function TakeAssessmentPage() {
         return;
       }
 
-      if (app.status === 'expired' || (app.expires_at && new Date(app.expires_at) < new Date())) {
+      const publicContent = await assessmentsApi.getPublicContentByToken(token);
+      if (!publicContent) {
         toast.error(t('applications.assessmentExpired'));
         setLoading(false);
         return;
       }
 
-      setApplication(app);
+      setApplication({
+        ...app,
+        assessments: {
+          ...(app.assessments ?? {}),
+          name: publicContent.assessment_name,
+          description: publicContent.assessment_description,
+        },
+      });
 
-      const assessmentData = await assessmentsApi.getWithQuizzes(app.assessment_id);
-      if (assessmentData) {
-        const ordered = [...assessmentData.assessment_quizzes].sort(
-          (a, b) => a.order_number - b.order_number,
-        );
-        setQuizzes(
-          ordered.map((aq) => ({
-            ...aq.quiz,
-            questions: Array.isArray(aq.quiz.questions)
-              ? aq.quiz.questions.map((q: any) => ({
+      const quizzesData = Array.isArray(publicContent.quizzes)
+        ? publicContent.quizzes.map((quiz: any) => ({
+            ...quiz,
+            questions: Array.isArray(quiz.questions)
+              ? quiz.questions.map((q: any) => ({
                   ...q,
                   alternatives: Array.isArray(q.alternatives)
-                    ? q.alternatives.sort((a: any, b: any) => a.order_number - b.order_number)
+                    ? [...q.alternatives].sort((a: any, b: any) => a.order_number - b.order_number)
                     : [],
                 }))
               : [],
-          })),
-        );
-      } else {
-        toast.error(t('applications.assessmentExpired'));
-      }
+          }))
+        : [];
+
+      setQuizzes(
+        quizzesData.sort((a: any, b: any) => (a.order_number ?? 0) - (b.order_number ?? 0)),
+      );
 
       if (app.status === 'pending') {
-        await applicationsApi.updateStatus(app.id, 'in_progress', {
-          started_at: new Date().toISOString(),
-        });
+        try {
+          await applicationsApi.updateStatusByToken(token, 'in_progress', {
+            started_at: new Date().toISOString(),
+          });
+        } catch (error: any) {
+          console.error('Erro ao atualizar status da aplicação', error?.message ?? error);
+        }
       }
     } catch (error: any) {
       toast.error('Erro ao carregar avaliação: ' + error.message);
@@ -92,7 +100,7 @@ export default function TakeAssessmentPage() {
   };
 
   const handleSubmit = async () => {
-    if (!application) return;
+    if (!application || !token) return;
 
     const currentQuiz = quizzes[currentQuizIndex];
     const unanswered = currentQuiz.questions.filter(q => !responses[q.id]);
@@ -116,7 +124,7 @@ export default function TakeAssessmentPage() {
         setCurrentQuizIndex(prev => prev + 1);
         setResponses({});
       } else {
-        await applicationsApi.updateStatus(application.id, 'completed', {
+        await applicationsApi.updateStatusByToken(token, 'completed', {
           completed_at: new Date().toISOString(),
         });
         setCompleted(true);
