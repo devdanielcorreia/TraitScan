@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useI18n } from '@/i18n/I18nContext';
-import { applicationsApi, quizzesApi, responsesApi } from '@/db/api';
+import { applicationsApi, assessmentsApi, responsesApi } from '@/db/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -50,9 +50,26 @@ export default function TakeAssessmentPage() {
 
       setApplication(app);
 
-      const assessmentWithQuizzes = await quizzesApi.getWithQuestions(app.assessment_id);
-      if (assessmentWithQuizzes) {
-        setQuizzes([assessmentWithQuizzes]);
+      const assessmentData = await assessmentsApi.getWithQuizzes(app.assessment_id);
+      if (assessmentData) {
+        const ordered = [...assessmentData.assessment_quizzes].sort(
+          (a, b) => a.order_number - b.order_number,
+        );
+        setQuizzes(
+          ordered.map((aq) => ({
+            ...aq.quiz,
+            questions: Array.isArray(aq.quiz.questions)
+              ? aq.quiz.questions.map((q: any) => ({
+                  ...q,
+                  alternatives: Array.isArray(q.alternatives)
+                    ? q.alternatives.sort((a: any, b: any) => a.order_number - b.order_number)
+                    : [],
+                }))
+              : [],
+          })),
+        );
+      } else {
+        toast.error(t('applications.assessmentExpired'));
       }
 
       if (app.status === 'pending') {

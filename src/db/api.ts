@@ -467,29 +467,50 @@ export const assessmentsApi = {
   },
 
   async getWithQuizzes(id: string) {
-    const { data: assessment, error: assessmentError } = await supabase
+    const { data, error } = await supabase
       .from('assessments')
-      .select('*')
+      .select(`
+        *,
+        assessment_quizzes (
+          order_number,
+          quiz_id,
+          quizzes (
+            *,
+            questions (
+              *,
+              alternatives (*)
+            )
+          )
+        )
+      `)
       .eq('id', id)
       .maybeSingle();
-    
-    if (assessmentError) throw assessmentError;
-    if (!assessment) return null;
 
-    const { data: assessmentQuizzes, error: quizzesError } = await supabase
-      .from('assessment_quizzes')
-      .select('*, quizzes(*)')
-      .eq('assessment_id', id)
-      .order('order_number', { ascending: true });
-    
-    if (quizzesError) throw quizzesError;
+    if (error) throw error;
+    if (!data) return null;
+
+    const assessmentQuizzes = Array.isArray(data.assessment_quizzes)
+      ? data.assessment_quizzes.map((aq: any) => ({
+          ...aq,
+          quiz: {
+            ...aq.quizzes,
+            questions: Array.isArray(aq.quizzes?.questions)
+              ? aq.quizzes.questions.map((q: any) => ({
+                  ...q,
+                  alternatives: Array.isArray(q.alternatives)
+                    ? q.alternatives.sort(
+                        (a: Alternative, b: Alternative) => a.order_number - b.order_number,
+                      )
+                    : [],
+                }))
+              : [],
+          },
+        }))
+      : [];
 
     return {
-      ...assessment,
-      assessment_quizzes: Array.isArray(assessmentQuizzes) ? assessmentQuizzes.map(aq => ({
-        ...aq,
-        quiz: aq.quizzes
-      })) : []
+      ...data,
+      assessment_quizzes: assessmentQuizzes,
     } as AssessmentWithQuizzes;
   },
 
